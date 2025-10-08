@@ -1,0 +1,7 @@
+build:
+  agentsmd:
+    from:
+      - file:adrs/*.md
+    output: _agents.md
+    metadata:
+      name: ADR (Architecture Decision Record) collection for Apache Iceberg

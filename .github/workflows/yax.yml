@@ -1,0 +1,39 @@
+name: yax build
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'adrs/*.md'
+  workflow_dispatch:
+
+jobs:
+  yax-build:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install yax via pipx
+        run: pipx install yaxai
+
+      - name: Run yax build
+        run: yax build --config yax-export.yml
+
+      - name: Commit updated _agents.md
+        run: |
+          if git diff --quiet -- _agents.md; then
+            echo "No changes in _agents.md"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add _agents.md
+          git commit -m "Update _agents.md"
+          git push
